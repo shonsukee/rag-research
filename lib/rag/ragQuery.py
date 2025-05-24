@@ -1,6 +1,5 @@
-from typing import Tuple, List
-
 import numpy as np
+from typing import Tuple, List
 from lib.baseQuery import BaseQuery
 
 class ragQuery(BaseQuery):
@@ -15,8 +14,7 @@ class ragQuery(BaseQuery):
             Tuple[str, List[float]]: (処理済みコンテキスト, 類似度スコアリスト)
         """
         results = {
-            "context": "",
-            "user_query": ""
+            "context": ""
         }
         similarities = []
 
@@ -36,7 +34,7 @@ class ragQuery(BaseQuery):
             prompt (str): ユーザの入力プロンプト
 
         Returns:
-            RetrieverQueryEngine: 切り替え後のクエリエンジン
+            Tuple[dict[str, str], float]: (処理済みコンテキスト, 類似度スコア)
         """
         index_name = "rag-research"
         self.query_engine = self._initialize_pinecone(index_name)
@@ -84,10 +82,11 @@ class ragQuery(BaseQuery):
         プロンプトの作成
 
         Args:
-            results (str): コンテキスト情報
-            user_query (str): ユーザークエリ
-        """
+            results (dict[str, str]): コンテキスト情報
 
+        Returns:
+            str: 生成されたプロンプト
+        """
         return self.prompt_template.format(
             context=results["context"],
             user_query=results["user_query"]

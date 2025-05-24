@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 from abc import ABC, abstractmethod
 from pathlib import Path
 from dotenv import load_dotenv
@@ -99,61 +99,15 @@ class BaseQuery(ABC):
         """
         pass
 
-    # @abstractmethod
-    # def _process_nodes(self, nodes: List) -> Tuple[str, List[float]]:
-    #     """
-    #     ノードの処理を行う抽象メソッド
+    @abstractmethod
+    def _process_nodes(self, nodes: List) -> Tuple[dict[str, str], float]:
+        """
+        ノードの処理を行う抽象メソッド
 
-    #     Args:
-    #         nodes (List): 処理対象のノードリスト
+        Args:
+            nodes (List): 処理対象のノードリスト
 
-    #     Returns:
-    #         Tuple[str, List[float]]: (処理済みコンテキスト, 類似度スコアリスト)
-    #     """
-    #     pass
-
-    # def query_index(self, user_query: str) -> Tuple[str, str, float]:
-    #     """
-    #     ユーザー入力に関連するインデックスを検索する関数
-
-    #     Args:
-    #         user_query (str): ユーザが修正したいコード
-
-    #     Returns:
-    #         Tuple[str, str, float]: (LLMからの回答, コンテキスト, 関連度の平均値)
-    #     """
-    #     try:
-    #         # クエリ結果から関連ノードを取得
-    #         response = self.query_engine.query(user_query)
-    #         related_nodes = response.source_nodes
-
-    #         # ノードの処理（サブクラスで実装）
-    #         context, similarities = self._process_nodes(related_nodes)
-
-    #         # 関連度の平均計算
-    #         similarity = float(np.mean(similarities)) if len(similarities) > 0 else 0.0
-
-    #         # プロンプトの生成
-    #         combined_query = self._create_prompt(context, user_query)
-
-    #         # OpenAI APIの呼び出し
-    #         chatgpt_response = self.client.chat.completions.create(
-    #             model="o4-mini",
-    #             messages=[
-    #                 {
-    #                     "role": "system",
-    #                     "content": f"You are a chatbot that modifies an old version of the {self.namespace} API to a new one. Relevant information must be followed."
-    #                 },
-    #                 {
-    #                     "role": "user",
-    #                     "content": combined_query
-    #                 }
-    #             ]
-    #         )
-    #         response = chatgpt_response.choices[0].message.content or ""
-
-    #         return response, context, similarity
-
-    #     except Exception as e:
-    #         raise Exception(f"クエリ処理中にエラーが発生しました: {str(e)}")
-
+        Returns:
+            Tuple[str, List[float]]: (処理済みコンテキスト, 類似度スコアリスト)
+        """
+        pass

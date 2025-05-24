@@ -50,8 +50,9 @@ class IOManager:
             f.write(f"```{language}\n")
             f.write(response or "None")
             f.write("\n```\n\n")
-            f.write("# Similarity Score\n")
-            f.write(str(similarity))
-            f.write("\n\n")
+            if similarity != 0:
+                f.write("# Similarity Score\n")
+                f.write(str(similarity))
+                f.write("\n\n")
             f.write("# Relevant Context\n")
             f.write(context)

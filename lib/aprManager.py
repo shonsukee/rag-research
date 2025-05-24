@@ -51,7 +51,7 @@ class APRManager:
         new_dir_path = f"{output_dir}/{namespace}/{data_type}/{new_file_name}"
         os.makedirs(new_dir_path, exist_ok=True)
 
-        # RAGの適用
+        # APRの適用
         print(f"----- No. {new_file_name} ----")
         # for idx in range(1, 6):
         for idx in range(1, 2):
