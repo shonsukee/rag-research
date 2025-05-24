@@ -8,6 +8,15 @@ IoT のREST API誤用を対象としたRAGの自動修正ツールです．
 - DB拡張RAGによる自動修正
 
 ## 使用方法
+### 初期化
+```
+$ git clone https://github.com/shonsukee/bachelor-research
+
+$ python3 -m venv myenv
+
+$ pip install -r requirements.txt
+```
+
 ### ベクトルDBへの格納
 
 
