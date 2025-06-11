@@ -1,20 +1,20 @@
-rag:
-	python -m lib.rag.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-dir $(prompt-dir)
-
-# ex:
-# make rag name=switchbot types=commit out=./result prompt-dir=./lib/rag
-
 llm:
-	python -m lib.llm.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-dir $(prompt-dir)
+	python -m lib.llm.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-name $(prompt-name)
 
 # ex:
-# make llm name=switchbot types=commit out=./result prompt-dir=./lib/llm
+# make llm name=switchbot types=commit out=./result prompt-name=llm
 
-duplicate:
-	python -m lib.duplicate_rag.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-dir $(prompt-dir)
+rag:
+	python -m lib.rag.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-name $(prompt-name)
 
 # ex:
-# make duplicate name=switchbot types=commit out=./result prompt-dir=./lib/duplicate_rag
+# make rag name=switchbot types=commit out=./result prompt-name=rag
+
+db_rag:
+	python -m lib.db_rag.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-name $(prompt-name)
+
+# ex:
+# make db name=switchbot types=commit out=./result prompt-name=db_rag
 
 store:
 	python -m lib.store.main --namespace $(name) --version $(version) --method $(method)

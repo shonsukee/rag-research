@@ -3,15 +3,15 @@ import numpy as np
 from lib.baseQuery import BaseQuery
 
 class DuplicateQuery(BaseQuery):
-    def __init__(self, namespace: str, prompt_dir: str):
+    def __init__(self, namespace: str, prompt_name: str):
         """
         DuplicateQueryクラスの初期化
 
         Args:
             namespace (str): Pineconeのネームスペース
-            prompt_dir (str): プロンプトテンプレートのディレクトリパス
+            prompt_name (str): プロンプトテンプレートのディレクトリパス
         """
-        super().__init__(namespace, prompt_dir)
+        super().__init__(namespace, prompt_name)
 
         # 複数のDBを初期化
         self.query_engines = {

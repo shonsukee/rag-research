@@ -1,6 +1,5 @@
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Dict
 from abc import ABC, abstractmethod
-from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 from pinecone import Pinecone
@@ -12,17 +11,17 @@ from llama_index.vector_stores.pinecone import PineconeVectorStore
 import os
 
 class BaseQuery(ABC):
-    def __init__(self, namespace: Optional[str] = None, prompt_dir: Optional[str] = None):
+    def __init__(self, namespace: Optional[str] = None, prompt_name: Optional[str] = None):
         """
         BaseQueryクラスの初期化
 
         Args:
             namespace (Optional[str]): Pineconeのネームスペース
-            prompt_dir (Optional[str]): プロンプトテンプレートのディレクトリパス
+            prompt_name (Optional[str]): プロンプトテンプレートのディレクトリパス
         """
         load_dotenv()
         self.namespace = namespace
-        self.prompt_dir = prompt_dir
+        self.prompt_name = prompt_name
         self.client = OpenAI()
         self.query_engine = self._initialize_pinecone()
         self.prompt_template = self._load_prompt_template()
@@ -33,15 +32,21 @@ class BaseQuery(ABC):
 
         Returns:
             str: プロンプトテンプレート
-        """
-        try:
-            if self.prompt_dir:
-                prompt_path = Path(self.prompt_dir) / "prompt.md"
-            else:
-                prompt_path = Path('.') / "prompt.md"
 
+        Raises:
+            ValueError: prompt_nameがNoneの場合
+            FileNotFoundError: プロンプトファイルが見つからない場合
+            Exception: その他のエラー
+        """
+        if not self.prompt_name:
+            raise ValueError("prompt_nameが指定されていません")
+
+        try:
+            prompt_path = './lib/prompt/' + self.prompt_name + '.md'
             with open(prompt_path, "r", encoding="utf-8") as f:
                 return f.read()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"プロンプトファイルが見つかりません: {prompt_path}")
         except Exception as e:
             raise Exception(f"プロンプトテンプレートの読み込みに失敗しました: {str(e)}")
 
@@ -49,12 +54,22 @@ class BaseQuery(ABC):
         """
         Pineconeの初期化とクエリエンジンの設定
 
+        Args:
+            index_name (str): Pineconeのインデックス名
+
         Returns:
             RetrieverQueryEngine: 設定済みのクエリエンジン
+
+        Raises:
+            ValueError: 環境変数が設定されていない場合
+            Exception: その他のエラー
         """
         try:
-            # NOTE: ベクトルDBの名前指定
-            pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
+            api_key = os.environ.get("PINECONE_API_KEY")
+            if not api_key:
+                raise ValueError("PINECONE_API_KEY環境変数が設定されていません")
+
+            pc = Pinecone(api_key=api_key)
             pinecone_index = pc.Index(index_name)
 
             vector_store = PineconeVectorStore(
@@ -100,7 +115,7 @@ class BaseQuery(ABC):
         pass
 
     @abstractmethod
-    def _process_nodes(self, nodes: List) -> Tuple[dict[str, str], float]:
+    def _process_nodes(self, nodes: List) -> Tuple[Dict[str, str], float]:
         """
         ノードの処理を行う抽象メソッド
 
@@ -108,6 +123,6 @@ class BaseQuery(ABC):
             nodes (List): 処理対象のノードリスト
 
         Returns:
-            Tuple[str, List[float]]: (処理済みコンテキスト, 類似度スコアリスト)
+            Tuple[Dict[str, str], float]: (処理済みコンテキスト, 類似度スコア)
         """
         pass

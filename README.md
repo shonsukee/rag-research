@@ -30,11 +30,11 @@ $ make store name=switchbot version=outdated method=all
 
 ### 自動バグ修正
 ```
-$ make llm name=switchbot types=commit out=./result/llm prompt-dir=lib/llm
+$ make llm name=switchbot types=commit out=./result/llm prompt-name=llm
 
-$ make rag name=switchbot types=commit out=./result/rag prompt-dir=lib/rag
+$ make rag name=switchbot types=commit out=./result/rag prompt-name=rag
 
-$ make duplicate name=switchbot types=commit out=./result/duplicate prompt-dir=lib/duplicate_rag
+$ make duplicate name=switchbot types=commit out=./result/duplicate prompt-name=duplicate_rag
 ```
 
 

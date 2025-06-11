@@ -8,8 +8,8 @@ def main():
     args = IOManager().parse_arguments()
 
     # プロンプトディレクトリが指定されていない場合は、現在のディレクトリを使用
-    prompt_dir = args.prompt_dir or os.path.dirname(os.path.abspath(__file__))
-    query = LLMQuery(namespace=args.namespace, prompt_dir=prompt_dir)
+    prompt_name = args.prompt_name or os.path.dirname(os.path.abspath(__file__))
+    query = LLMQuery(namespace=args.namespace, prompt_name=prompt_name)
 
     for data_type in args.data_types:
         APRManager().process_data_type(
