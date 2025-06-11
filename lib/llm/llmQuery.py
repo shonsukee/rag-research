@@ -61,6 +61,7 @@ class LLMQuery(BaseQuery):
                 "user_query": prompt
             }
             combined_query = self._create_prompt(results)
+            print("Create prompt...")
             chatgpt_response = self.client.chat.completions.create(
                 model="o4-mini",
                 messages=[
@@ -74,6 +75,7 @@ class LLMQuery(BaseQuery):
                     }
                 ]
             )
+            print("Generate response by o4-mini...")
             response = chatgpt_response.choices[0].message.content or ""
             return response, links, 0
 

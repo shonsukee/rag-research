@@ -19,7 +19,7 @@ class ragQuery(BaseQuery):
         similarities = []
 
         for idx, node in enumerate(nodes):
-            results["context"] += f"""\nContext number {idx+1} (score: {node.score}): \n{node.text}"""
+            results["context"] += f"""\nContext number {idx+1} (score: {node.score}):\n{node.text}"""
             similarities.append(node.score)
 
         similarity = float(np.mean(similarities)) if len(similarities) > 0 else 0.0
@@ -36,6 +36,7 @@ class ragQuery(BaseQuery):
         Returns:
             Tuple[dict[str, str], float]: (処理済みコンテキスト, 類似度スコア)
         """
+        print("Fetch context from DB...")
         index_name = "rag-research"
         self.query_engine = self._initialize_pinecone(index_name)
         response = self.query_engine.query(prompt)
@@ -57,7 +58,9 @@ class ragQuery(BaseQuery):
         """
         try:
             results, similarity = self._fetch_pinecone_indexes(prompt)
+            print("Create prompt...")
             combined_query = self._create_prompt(results)
+            print("Generate response by o4-mini...")
             chatgpt_response = self.client.chat.completions.create(
                 model="o4-mini",
                 messages=[

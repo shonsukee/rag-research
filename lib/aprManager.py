@@ -53,8 +53,7 @@ class APRManager:
 
         # APRの適用
         print(f"----- No. {new_file_name} ----")
-        # for idx in range(1, 6):
-        for idx in range(1, 2):
+        for idx in range(1, 6):
             response, context, similarity = query.generate_response(prompt)
             IOManager().save_results(
                 new_dir_path,
