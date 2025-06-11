@@ -1,5 +1,5 @@
 # RAG
-IoT のREST API誤用を対象としたRAGの自動修正ツールです．
+REST API誤用を対象としたRAGの自動修正ツールです．
 
 ## 機能
 - REST API仕様をベクトルDBへ格納
@@ -18,7 +18,13 @@ $ pip install -r requirements.txt
 ```
 
 ### ベクトルDBへの格納
+- [Pinecone](https://app.pinecone.io/)で作成したインデックスに格納する
 
+```
+$ make store name=<project-name> version=<latest || outdated> method=<all || separate>
+
+$ make store name=switchbot version=outdated method=all
+```
 
 
 
@@ -34,8 +40,4 @@ $ make duplicate name=switchbot types=commit out=./result/duplicate prompt-dir=l
 
 
 ## 実装方針メモ
-- DBから抽出する数は今後2, 3...と変化するためそれに対応できるようにしたい
-- ただ，プロンプトが異なるから全てのパターンに対して実装しなければいけなさそう
-結論
-- baseQueryにはDBからの取得メソッドを書いて
-- それぞれのQuery内でループを回し，呼び出す感じにしよ
+- それぞれの手法にプロンプトを用意して，抽出先のDBをコマンドで指定することで実現
