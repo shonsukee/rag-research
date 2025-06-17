@@ -9,6 +9,7 @@ def main() -> None:
     parser.add_argument('--namespace', type=str, required=True, help='対象のネームスペース(例: switchbot, fitbit)')
     parser.add_argument('--version', type=str, required=True, choices=['latest', 'outdated'], help='バージョン(latest または outdated)')
     parser.add_argument('--method', type=str, required=True, choices=['all', 'separate'], help='抽出対象(all: 全てのURL, separate: URLごとに分ける)')
+    parser.add_argument('--index-name', type=str, required=True,  help='格納先のPineconeインデックス名')
     args = parser.parse_args()
 
     # プロジェクトのルートディレクトリを取得
@@ -24,7 +25,7 @@ def main() -> None:
     context = Context(args.namespace, args.version)
 
     if args.method == 'all':
-        context.extract(url_list)
+        context.extract(url_list, args.index_name)
     elif args.method == 'separate':
         context.separate(url_list)
 

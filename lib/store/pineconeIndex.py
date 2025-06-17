@@ -2,10 +2,11 @@ from llama_index.core import VectorStoreIndex, StorageContext, Settings
 from llama_index.core import Document
 from pinecone import Pinecone
 from llama_index.vector_stores.pinecone import PineconeVectorStore
+from llama_index.embeddings.openai import OpenAIEmbedding
 import logging
 import os
 import sys
-from typing import List, Optional
+from typing import List
 
 CHUNK_SIZE = 512
 CHUNK_OVERLAP = 50
@@ -28,23 +29,29 @@ class PineconeIndex:
         self.pc = Pinecone(api_key=api_key)
         self.namespace = namespace
 
-    def store(self, documents: List[Document], index_name: str, namespace: Optional[str] = None) -> None:
+    def store(self, documents: List[Document], index_name: str) -> None:
         """
         ドキュメントをPineconeに格納する
 
         Args:
             documents (List[Document]): 格納するドキュメントのリスト
             index_name (str): Pineconeのインデックス名
-            namespace (str, optional): Pineconeのネームスペース
         """
         try:
             pinecone_index = self.pc.Index(index_name)
             Settings.chunk_size = CHUNK_SIZE
             Settings.chunk_overlap = CHUNK_OVERLAP
 
+            # Embeddingモデルの設定
+            embed_model = OpenAIEmbedding(
+                model="text-embedding-3-small",
+                embed_batch_size=100
+            )
+            Settings.embed_model = embed_model
+
             vector_store = PineconeVectorStore(
                 pinecone_index=pinecone_index,
-                namespace=namespace
+                namespace=self.namespace
             )
 
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
@@ -52,9 +59,7 @@ class PineconeIndex:
                 documents=documents, storage_context=storage_context
             )
 
-            print("--------------完成！---------------")
+            logging.info(f"ドキュメントをPineconeの'{index_name}'インデックスに格納しました！")
         except Exception as e:
-            print("-----------エラー発生！ここから----------")
-            print(e)
-            print("-----------エラー発生！ここまで----------")
+            logging.error(f"ドキュメントの格納中にエラーが発生しました: {e}")
 

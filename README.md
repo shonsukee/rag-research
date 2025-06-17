@@ -10,34 +10,49 @@ REST API誤用を対象としたRAGの自動修正ツールです．
 ## 使用方法
 ### 初期化
 ```
-$ git clone https://github.com/shonsukee/bachelor-research
+$ git clone https://github.com/shonsukee/rag-research.git
 
 $ python3 -m venv myenv
 
 $ pip install -r requirements.txt
 ```
 
-### ベクトルDBへの格納
-- [Pinecone](https://app.pinecone.io/)で作成したインデックスに格納する
+### インデックスの準備
+#### Pinecone Indexの設定
+1. Create Index押下
+2. index nameの入力
+3. text-embedding-3-smallを選択して，Dimensionを1536に設定
+4. その他は変えずにCreate Index
 
+> [!WARNING]
+> ※ 無料だとIndexは5つまでしか設定できない
+
+#### コンテキスト格納コマンド
+> [!NOTE]
+> `/dataset`にプロバイダ名と仕様URLをあらかじめ格納しておく！
+> fitbit, switchbotは対応済み
+
+- [Pinecone](https://app.pinecone.io/)に作成したインデックスへ格納する
+
+- all
+    - URLから取得した情報をそのままDBへ格納する
+- separate
+    - URLから取得した情報をコード片と自然言語に分割する
+    - その後，指定されたバージョンのDBへ格納する
 ```
-$ make store name=<project-name> version=<latest || outdated> method=<all || separate>
-
-$ make store name=switchbot version=outdated method=all
+$ make store name=<project-name> version=<latest || outdated> method=<all || separate> index-name=<index-name>
+```
+switchbotの非推奨仕様をそのままcontextという名前のDBに格納するコマンド
+```
+$ make store name=switchbot version=outdated method=all index-name=context
 ```
 
-
-
-### 自動バグ修正
+### 自動バグ修正の適用
+- プロンプトテンプレートを指定して自動バグ修正を実施
+- 詳細は`/prompt`のテンプレート集を確認
 ```
-$ make llm name=switchbot types=commit out=./result/llm prompt-name=llm
-
-$ make rag name=switchbot types=commit out=./result/rag prompt-name=rag
-
-$ make duplicate name=switchbot types=commit out=./result/duplicate prompt-name=duplicate_rag
+$ make apr name=<project-name> types=<commit || issue || pull-request> out=<output-directory> prompt-name=<prompt-template-file-name>
 ```
-
-
-
-## 実装方針メモ
-- それぞれの手法にプロンプトを用意して，抽出先のDBをコマンドで指定することで実現
+```
+$ make apr name=switchbot types=commit out=./result/llm prompt-name=llm
+```
