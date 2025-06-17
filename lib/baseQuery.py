@@ -1,5 +1,7 @@
-from typing import Tuple, Optional, List, Dict
-from abc import ABC, abstractmethod
+import logging
+from typing import Optional, List
+import string
+from abc import ABC
 from dotenv import load_dotenv
 from openai import OpenAI
 from pinecone import Pinecone
@@ -19,11 +21,15 @@ class BaseQuery(ABC):
             namespace (Optional[str]): Pineconeのネームスペース
             prompt_name (Optional[str]): プロンプトテンプレートのディレクトリパス
         """
+        if namespace is None:
+            raise ValueError("namespaceが指定されていません")
+        if prompt_name is None:
+            raise ValueError("prompt_nameが指定されていません")
+
         load_dotenv()
         self.namespace = namespace
         self.prompt_name = prompt_name
         self.client = OpenAI()
-        self.query_engine = self._initialize_pinecone()
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
@@ -38,9 +44,6 @@ class BaseQuery(ABC):
             FileNotFoundError: プロンプトファイルが見つからない場合
             Exception: その他のエラー
         """
-        if not self.prompt_name:
-            raise ValueError("prompt_nameが指定されていません")
-
         try:
             prompt_path = './lib/prompt/' + self.prompt_name + '.md'
             with open(prompt_path, "r", encoding="utf-8") as f:
@@ -93,29 +96,73 @@ class BaseQuery(ABC):
         except Exception as e:
             raise Exception(f"Pineconeの初期化に失敗しました: {str(e)}")
 
-    @abstractmethod
-    def _create_prompt(self, results: dict[str, str], user_query: str) -> str:
+    def _fetch_vars(self) -> List[str]:
+        """
+        プロンプトテンプレートから変数を取得する
+
+        Returns:
+            List[str]: プロンプトテンプレートの変数リスト
+        """
+        return [v[1] for v in string.Formatter().parse(self.prompt_template) if v[1] is not None]
+
+    def _create_prompt(self, results: dict[str, str]) -> str:
         """
         プロンプトの作成
 
         Args:
-            results (str): コンテキスト情報
-            user_query (str): ユーザークエリ
+            results (Dict[str, str]): コンテキスト情報を含む辞書
 
         Returns:
             str: 生成されたプロンプト
-        """
-        pass
 
-    @abstractmethod
-    def generate_response(self, prompt: str) -> Tuple[str, str, float]:
+        Raises:
+            KeyError: 必要なキーがresultsに存在しない場合
+            ValueError: プロンプトテンプレートのフォーマットに失敗した場合
+        """
+        try:
+            # 必要な変数が全て存在するか確認
+            missing_vars = [var for var in self._fetch_vars() if var not in results]
+            if missing_vars:
+                raise KeyError(f"プロンプトテンプレートに必要な変数が不足しています: {missing_vars}")
+
+            return self.prompt_template.format(**results)
+        except KeyError as e:
+            raise KeyError(f"プロンプト生成に必要なキーが存在しません: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"プロンプトの生成に失敗しました: {str(e)}")
+
+    def generate_response(self, prompt: str) -> str:
         """
         プロンプトに基づいてレスポンスを生成する
-        """
-        pass
 
-    @abstractmethod
-    def _process_nodes(self, nodes: List) -> Tuple[Dict[str, str], float]:
+        Args:
+            prompt (str): 生成されたプロンプト
+
+        Returns:
+            str: 生成されたレスポンス
+        """
+        try:
+            logging.info("Generate response by o4-mini...")
+            chatgpt_response = self.client.chat.completions.create(
+                model="o4-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": f"You are a chatbot that modifies an old version of the {self.namespace} API to a new one. Relevant information must be followed."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            )
+            response = chatgpt_response.choices[0].message.content or ""
+            return response
+
+        except Exception as e:
+            raise Exception(f"クエリ処理中にエラーが発生しました: {str(e)}")
+
+    def _process_nodes(self, nodes: List) -> str:
         """
         ノードの処理を行う抽象メソッド
 
@@ -123,6 +170,43 @@ class BaseQuery(ABC):
             nodes (List): 処理対象のノードリスト
 
         Returns:
-            Tuple[Dict[str, str], float]: (処理済みコンテキスト, 類似度スコア)
+            str: 処理済みのノードテキスト
         """
-        pass
+        node_prompt = ""
+
+        for node in nodes:
+            node_prompt += f"\n\nContext: \n{node.text}"
+
+        return node_prompt
+
+    def _fetch_pinecone_indexes(self, index_name: str, user_query: str) -> str:
+        """
+        Pineconeインデックスからデータを取得する
+
+        Args:
+            index_name (str): Pineconeのインデックス名
+            user_query (str): ユーザークエリ
+
+        Returns:
+            str: 取得したデータのテキスト
+        """
+        query_engine = self._initialize_pinecone(index_name)
+        response = query_engine.query(user_query)
+        return self._process_nodes(response.source_nodes)
+
+    def _fetch_links(self) -> str:
+        """
+        datasetからリンクを取得する
+
+        Returns:
+            str: 取得したリンクのテキスト
+        """
+        links = []
+        directory_path = f"./dataset/{self.namespace}/url"
+        for filename in os.listdir(directory_path):
+            language = filename.split(".")[-1]
+            if language == "txt":
+                with open(f"{directory_path}/{filename}", "r", encoding="utf-8") as file:
+                    content = file.read()
+                    links.append(content)
+        return "\n".join(links)

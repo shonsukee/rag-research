@@ -1,3 +1,4 @@
+import logging
 import os
 
 from lib.baseQuery import BaseQuery
@@ -7,7 +8,7 @@ class APRManager:
     def __init__(self):
         pass
 
-    def read_prompt_file(self, file_path: str) -> str:
+    def read_file(self, file_path: str) -> str:
         """
         プロンプトファイルを読み込む
 
@@ -25,51 +26,53 @@ class APRManager:
         query: BaseQuery,
         file_path: str,
         output_dir: str,
-        namespace: str,
         data_type: str,
-        filename: str,
-        language: str
+        filename: str
     ) -> None:
         """
-        単一ファイルのRAG処理を実行する
+        単一ファイルの処理を実行する
 
         Args:
-            query (Query): RAGクエリオブジェクト
+            query (BaseQuery): クエリオブジェクト
             file_path (str): 入力ファイルパス
             output_dir (str): 出力ディレクトリ
-            namespace (str): ネームスペース
             data_type (str): データタイプ
             filename (str): ファイル名
             language (str): 言語
         """
-        prompt = self.read_prompt_file(file_path)
-        if not prompt:
-            return
+        # プロンプトの作成
+        results = {}
+        results["user_query"] = self.read_file(file_path)
+
+        if query.prompt_name == "llm":
+            results["link"] = query._fetch_links()
+        else:
+            for key in query._fetch_vars():
+                if key == "user_query":
+                    continue
+                results[key] = query._fetch_pinecone_indexes(key, results["user_query"])
+        prompt = query._create_prompt(results)
 
         # 結果保存先ディレクトリ作成
         new_file_name = filename.split(".")[0]
-        new_dir_path = f"{output_dir}/{namespace}/{data_type}/{new_file_name}"
+        new_dir_path = f"{output_dir}/{query.namespace}/{data_type}/{new_file_name}"
         os.makedirs(new_dir_path, exist_ok=True)
 
         # APRの適用
-        print(f"----- No. {new_file_name} ----")
+        logging.info(f"Processing file: {new_file_name} in {data_type} for {query.namespace}")
         for idx in range(1, 6):
-            response, context, similarity = query.generate_response(prompt)
+            response = query.generate_response(prompt)
             IOManager().save_results(
                 new_dir_path,
                 idx,
                 prompt,
-                response,
-                similarity,
-                context,
-                language
+                response
             )
             print(f"idx: {idx}-finish.")
 
     def process_data_type(
         self,
         query: BaseQuery,
-        namespace: str,
         data_type: str,
         output_dir: str
     ) -> None:
@@ -77,22 +80,21 @@ class APRManager:
         特定のデータタイプのファイルを処理する
 
         Args:
-            query (Query): RAGクエリオブジェクト
-            namespace (str): ネームスペース
+            query (BaseQuery): クエリオブジェクト
             data_type (str): データタイプ
             output_dir (str): 出力ディレクトリ
+
+        Raises:
+            ValueError: ネームスペースが指定されていない場合
         """
-        directory_path = f"./dataset/{namespace}/{data_type}/"
+        directory_path = f"./dataset/{query.namespace}/{data_type}/"
         for filename in os.listdir(directory_path):
-            language = filename.split(".")[-1]
             file_path = os.path.join(directory_path, filename)
             self.process_single_file(
                 query,
                 file_path,
                 output_dir,
-                namespace,
                 data_type,
-                filename,
-                language
+                filename
             )
-        print("complete: ", data_type)
+        logging.info(f"Finished processing {data_type} files for namespace {query.namespace}")

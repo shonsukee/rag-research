@@ -1,3 +1,8 @@
+apr:
+	python -m lib.apr.main --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-name $(prompt-name)
+# ex:
+# make apr name=switchbot types=commit out=./result prompt-name=apr
+
 llm:
 	python -m lib.llm.apr --namespace $(name) --data-types $(types) --output-dir $(out) --prompt-name $(prompt-name)
 

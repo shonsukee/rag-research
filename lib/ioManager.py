@@ -11,7 +11,11 @@ class IOManager:
         コマンドライン引数を解析する
 
         Returns:
-            argparse.Namespace: 解析された引数
+            argparse.Namespace: 解析された引数。以下の属性を含む：
+                - namespace: 対象のnamespace
+                - data_types: 処理するデータタイプのリスト
+                - output_dir: 出力先ディレクトリ（デフォルト: './result/'）
+                - prompt_name: プロンプトテンプレートのディレクトリパス
         """
         parser = argparse.ArgumentParser(description='RAG処理を実行するスクリプト')
         parser.add_argument('--namespace', type=str, required=True, help='対象のnamespace')
@@ -26,9 +30,6 @@ class IOManager:
         idx: int,
         prompt: str,
         response: str,
-        similarity: float,
-        context: str,
-        language: str
     ) -> None:
         """
         結果をファイルに保存する
@@ -38,9 +39,6 @@ class IOManager:
             idx (int): インデックス
             prompt (str): プロンプト
             response (str): レスポンス
-            similarity (float): 類似度スコア
-            context (str): 関連コンテキスト
-            language (str): 言語
 
         Raises:
             OSError: ディレクトリの作成やファイルの書き込みに失敗した場合
@@ -52,18 +50,8 @@ class IOManager:
             output_path = f"{dir_path}/{idx}.md"
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write("# User Query\n")
-                f.write(f"```{language}\n")
                 f.write(prompt)
-                f.write("\n```\n\n")
-                f.write("# Response\n")
-                f.write(f"```{language}\n")
+                f.write("\n\n# Response\n")
                 f.write(response or "None")
-                f.write("\n```\n\n")
-                if similarity != 0:
-                    f.write("# Similarity Score\n")
-                    f.write(str(similarity))
-                    f.write("\n\n")
-                f.write("# Relevant Context\n")
-                f.write(context)
         except OSError as e:
             raise OSError(f"ファイルの保存に失敗しました: {str(e)}")
