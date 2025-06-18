@@ -6,4 +6,4 @@ apr:
 store:
 	python -m lib.store.main --namespace $(name) --version $(version) --method $(method) --index-name $(index-name)
 # ex:
-# make store name=switchbot version=latest method=all index-name=commit
+# make store name=switchbot version=latest method=all index-name=latest
