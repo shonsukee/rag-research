@@ -174,8 +174,10 @@ class BaseQuery(ABC):
         """
         node_prompt = ""
 
-        for node in nodes:
-            node_prompt += f"\n\nContext: \n{node.text}"
+        for idx, node in enumerate(nodes, 1):
+            if idx != 1:
+                node_prompt += "\n\n"
+            node_prompt += f"【Context No.{idx}】\n{node.text}"
 
         return node_prompt
 

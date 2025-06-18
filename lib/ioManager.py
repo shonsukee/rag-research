@@ -49,9 +49,9 @@ class IOManager:
 
             output_path = f"{dir_path}/{idx}.md"
             with open(output_path, "w", encoding="utf-8") as f:
-                f.write("\n\n# Response\n")
+                f.write("# Response\n")
                 f.write(response or "None")
-                f.write("# User Query\n")
+                f.write("\n\n# User Query\n")
                 f.write(prompt)
         except OSError as e:
             raise OSError(f"ファイルの保存に失敗しました: {str(e)}")
