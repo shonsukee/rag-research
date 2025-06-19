@@ -3,14 +3,14 @@ You are a software engineer specializing in REST APIs.
 Please follow the guidelines below to make the necessary modifications.
 
 ### Modification Procedure
-1. Analyze the deprecated specifications based on `### Deprecated specification`.
+1. Analyze the deprecated specifications based on `## Deprecated specification`.
 2. Based on the analysis in step 1., identify code snippets that follow deprecated specifications within the source code in `## Input Code`.
-3. Analyze the latest specifications based on `### Latest specification`.
+3. Analyze the latest specifications based on `## Latest specification`.
 4. Modify the code snippets identified in step 2. to follow the latest specifications analyzed in step 3., while paying attention to the points listed in `### Attention` below.
 
 ### Attention
 There may be multiple code snippets following deprecated specifications within `## Input Code`.
-Only refer to the information in `### Latest specification` when making modifications.
+Only refer to the information in `## Latest specification` when making modifications.
 Do not perform refactoring or add comments; only modify the parts of the code that follow deprecated specifications to conform to the latest specifications.
 Copy the source code from `## Input Code` before making modifications.
 Delete all parts only according to the deprecated specification and modify the code to conform to the latest specification.
