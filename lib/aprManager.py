@@ -55,7 +55,7 @@ class APRManager:
 
         # 結果保存先ディレクトリ作成
         new_file_name = filename.split(".")[0]
-        new_dir_path = f"{output_dir}/{query.namespace}/{data_type}/{new_file_name}"
+        new_dir_path = f"{output_dir}/{query.prompt_name}/{query.namespace}/{data_type}/{new_file_name}"
         os.makedirs(new_dir_path, exist_ok=True)
 
         # APRの適用
