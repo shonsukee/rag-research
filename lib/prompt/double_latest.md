@@ -20,13 +20,19 @@ After modifications, ensure that all code following deprecated specifications ha
 If multiple deprecated specifications are present within `## Input Code`, confirm that all are unified under the latest specifications.
 
 ## Input Code
+```
 {user_query}
+```
 
 ## Technical Specifications for latest natural language
+```
 {latest_natural_language}
+```
 
 ## Technical Specifications for latest code
+```
 {latest_code}
+```
 
 ## Output Indicator
 Ensure that, except for the parts modified to follow the latest specifications, the structure and format of the code remain identical to the original code. Here, "identical" means that there should be no differences (diff) whatsoever, including in indentation, spaces, line breaks, and code structure, which should all be exactly the same as the original.

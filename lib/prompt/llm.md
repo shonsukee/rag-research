@@ -14,4 +14,6 @@ Only output code.
 {link}
 
 ## Code
+```
 {user_query}
+```
