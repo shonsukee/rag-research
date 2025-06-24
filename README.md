@@ -21,6 +21,7 @@ $ pip install -r requirements.txt
 #### Pinecone Indexの設定
 1. Create Index押下
 2. index nameの入力
+    - index nameは`latest`, `deprecated`, `latest-natural-language`, `latest-code`...にすることを推奨します
 3. text-embedding-3-smallを選択して，Dimensionを1536に設定
 4. その他は変えずにCreate Index
 
@@ -42,8 +43,15 @@ $ pip install -r requirements.txt
 ```
 $ make store name=<project-name> version=<latest || deprecated> method=<all || separate> index-name=<index-name>
 ```
-switchbotの非推奨仕様をそのままcontextという名前のDBに格納するコマンド
 ```
+// switchbotの非推奨仕様をそのまま`deprecated`という名前のDBに格納するコマンド
+$ make store name=switchbot version=deprecated method=all index-name=deprecated
+
+// switchbotの最新仕様をコードと自然言語で分割して`latest-code`, `latest-natural-language`という名前のDBに格納するコマンド
+$ make store name=switchbot version=latest method=separate index-name=latest
+
+// switchbotの最新仕様, 非推奨仕様をそのまま`context`という名前のDBに格納するコマンド
+$ make store name=switchbot version=latest method=all index-name=context
 $ make store name=switchbot version=deprecated method=all index-name=context
 ```
 
@@ -51,8 +59,11 @@ $ make store name=switchbot version=deprecated method=all index-name=context
 - プロンプトテンプレートを指定して自動バグ修正を実施
 - 詳細は`/prompt`のテンプレート集を確認
 ```
-$ make apr name=<project-name> types=<commit || issue || pull-request> out=<output-directory> prompt-name=<prompt-template-file-name>
+$ make apr name=<project-name> types=<commits || issues || pull-requests> out=<output-directory> prompt-name=<prompt-template-file-name>
 ```
 ```
-$ make apr name=switchbot types=commit out=./result/llm prompt-name=llm
+$ make apr name=switchbot types=commits out=./results prompt-name=llm
+
+// switchbotのPRデータセットをtriple_latestというプロンプトに適用して`results`というディレクトリに出力
+$ make apr name=switchbot types=pull-requests out=./results prompt-name=triple_latest
 ```

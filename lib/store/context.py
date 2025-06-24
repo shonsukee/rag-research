@@ -165,8 +165,8 @@ class Context:
         c_documents = [Document(text=t) for t in code_blocks]
 
         # 出力ディレクトリの作成
-        output_dir = f"./dataset/context/{self.version}"
-        os.makedirs(output_dir, exist_ok=True)
+        # output_dir = f"./dataset/context/{self.version}"
+        # os.makedirs(output_dir, exist_ok=True)
 
         # 自然言語テキストの保存
         # for i, doc in enumerate(n_documents):
@@ -183,5 +183,5 @@ class Context:
         #     logging.info(f"コードブロック{i}を保存: {doc.text[:100]}...")
 
         # Pineconeに格納
-        self.pinecone_index.store(n_documents, f"{self.version}-lang")
+        self.pinecone_index.store(n_documents, f"{self.version}-natural-language")
         self.pinecone_index.store(c_documents, f"{self.version}-code")
