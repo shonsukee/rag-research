@@ -7,7 +7,7 @@ def main() -> None:
     # コマンドライン引数の解析
     parser = argparse.ArgumentParser(description='Pineconeへのデータ格納スクリプト')
     parser.add_argument('--namespace', type=str, required=True, help='対象のネームスペース(例: switchbot, fitbit)')
-    parser.add_argument('--version', type=str, required=True, choices=['latest', 'outdated'], help='バージョン(latest または outdated)')
+    parser.add_argument('--version', type=str, required=True, choices=['latest', 'deprecated'], help='バージョン(latest または deprecated)')
     parser.add_argument('--method', type=str, required=True, choices=['all', 'separate'], help='抽出対象(all: 全てのURL, separate: URLごとに分ける)')
     parser.add_argument('--index-name', type=str, required=True,  help='格納先のPineconeインデックス名')
     args = parser.parse_args()

@@ -25,7 +25,7 @@ class Context:
 
         Args:
             namespace (str): 対象のネームスペース（例：'switchbot', 'fitbit'）
-            version (str): バージョン（'latest' または 'outdated'）
+            version (str): バージョン（'latest' または 'deprecated'）
         """
         load_dotenv()
         self.pinecone_index = PineconeIndex(namespace)

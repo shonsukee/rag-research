@@ -40,11 +40,11 @@ $ pip install -r requirements.txt
     - URLから取得した情報をコード片と自然言語に分割する
     - その後，指定されたバージョンのDBへ格納する
 ```
-$ make store name=<project-name> version=<latest || outdated> method=<all || separate> index-name=<index-name>
+$ make store name=<project-name> version=<latest || deprecated> method=<all || separate> index-name=<index-name>
 ```
 switchbotの非推奨仕様をそのままcontextという名前のDBに格納するコマンド
 ```
-$ make store name=switchbot version=outdated method=all index-name=context
+$ make store name=switchbot version=deprecated method=all index-name=context
 ```
 
 ### 自動バグ修正の適用
