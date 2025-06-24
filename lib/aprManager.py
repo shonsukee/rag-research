@@ -43,6 +43,7 @@ class APRManager:
         # プロンプトの作成
         results = {}
         results["user_query"] = self.read_file(file_path)
+        language = file_path.split("/")[-1].split(".")[-1]
 
         if query.prompt_name == "llm":
             results["link"] = query._fetch_links()
@@ -62,6 +63,9 @@ class APRManager:
         logging.info(f"Processing file: {new_file_name} in {data_type} for {query.namespace}")
         for idx in range(1, 6):
             response = query.generate_response(prompt)
+            if '```' not in response:
+                response = f"```{language}\n{response}\n```"
+
             IOManager().save_results(
                 new_dir_path,
                 idx,

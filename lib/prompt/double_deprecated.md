@@ -29,12 +29,6 @@ If multiple deprecated specifications are present within `## Input Code`, confir
 ## Input Code
 {user_query}
 
-## Technical Specifications for latest natural language
-{latest_natural_language}
-
-## Technical Specifications for latest code
-{latest_code}
-
 ## Output Indicator
 Ensure that, except for the parts modified to follow the latest specifications, the structure and format of the code remain identical to the original code. Here, "identical" means that there should be no differences (diff) whatsoever, including in indentation, spaces, line breaks, and code structure, which should all be exactly the same as the original.
 If there are any changes beyond the modified sections, this is considered incorrect.

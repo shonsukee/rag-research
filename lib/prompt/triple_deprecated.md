@@ -5,12 +5,12 @@ Please follow the guidelines below to make the necessary modifications.
 ### Modification Procedure
 1. Analyze the deprecated specifications based on `### Technical Specifications for deprecated natural language` and `### Technical Specifications for deprecated code`.
 2. Based on the analysis in step 1., identify code snippets that follow deprecated specifications within the source code in `## Input Code`.
-3. Analyze the latest specifications based on `### Technical Specifications for latest natural language` and `### Technical Specifications for latest code`.
+3. Analyze the latest specifications based on `## Latest specification`.
 4. Modify the code snippets identified in step 2. to follow the latest specifications analyzed in step 3., while paying attention to the points listed in `### Attention` below.
 
 ### Attention
 There may be multiple code snippets following deprecated specifications within `## Input Code`.
-Only refer to the information in `### Technical Specifications for Latest natural language` and `### Technical Specifications for Latest code` when making modifications.
+Only refer to the information in `## Latest specification` when making modifications.
 Do not perform refactoring or add comments; only modify the parts of the code that follow deprecated specifications to conform to the latest specifications.
 Copy the source code from `## Input Code` before making modifications.
 Delete all parts only according to the deprecated specification and modify the code to conform to the latest specification.
@@ -29,11 +29,8 @@ If multiple deprecated specifications are present within `## Input Code`, confir
 ## Input Code
 {user_query}
 
-## Technical Specifications for latest natural language
-{latest_natural_language}
-
-## Technical Specifications for latest code
-{latest_code}
+## Latest specification
+{latest}
 
 ## Output Indicator
 Ensure that, except for the parts modified to follow the latest specifications, the structure and format of the code remain identical to the original code. Here, "identical" means that there should be no differences (diff) whatsoever, including in indentation, spaces, line breaks, and code structure, which should all be exactly the same as the original.

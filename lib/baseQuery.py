@@ -192,6 +192,9 @@ class BaseQuery(ABC):
         Returns:
             str: 取得したデータのテキスト
         """
+        if '_' in index_name:
+            index_name = index_name.replace('_', '-')
+
         query_engine = self._initialize_pinecone(index_name)
         response = query_engine.query(user_query)
         return self._process_nodes(response.source_nodes)

@@ -49,7 +49,7 @@ class IOManager:
 
             output_path = f"{dir_path}/{idx}.md"
             with open(output_path, "w", encoding="utf-8") as f:
-                f.write("# Response\n")
+                f.write("# LLM Response\n")
                 f.write(response or "None")
                 f.write("\n\n# User Query\n")
                 f.write(prompt)
