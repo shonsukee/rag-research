@@ -8,8 +8,8 @@ import os
 import sys
 from typing import List
 
-CHUNK_SIZE = 512
-CHUNK_OVERLAP = 50
+CHUNK_SIZE = 2048
+CHUNK_OVERLAP = 200
 
 class PineconeIndex:
     """
@@ -44,7 +44,7 @@ class PineconeIndex:
 
             # Embeddingモデルの設定
             embed_model = OpenAIEmbedding(
-                model="text-embedding-3-small",
+                model="text-embedding-3-large",
                 embed_batch_size=100
             )
             Settings.embed_model = embed_model
@@ -62,4 +62,5 @@ class PineconeIndex:
             logging.info(f"ドキュメントをPineconeの'{index_name}'インデックスに格納しました！")
         except Exception as e:
             logging.error(f"ドキュメントの格納中にエラーが発生しました: {e}")
+            raise
 

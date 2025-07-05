@@ -5,11 +5,12 @@ from abc import ABC
 from dotenv import load_dotenv
 from openai import OpenAI
 from pinecone import Pinecone
-from llama_index.core import VectorStoreIndex, get_response_synthesizer
+from llama_index.core import VectorStoreIndex, get_response_synthesizer, Settings
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.vector_stores.pinecone import PineconeVectorStore
+from llama_index.embeddings.openai import OpenAIEmbedding
 import os
 
 class BaseQuery(ABC):
@@ -75,6 +76,13 @@ class BaseQuery(ABC):
             pc = Pinecone(api_key=api_key)
             pinecone_index = pc.Index(index_name)
 
+            # Embeddingモデルの設定
+            embed_model = OpenAIEmbedding(
+                model="text-embedding-3-large",
+                embed_batch_size=100
+            )
+            Settings.embed_model = embed_model
+
             vector_store = PineconeVectorStore(
                 pinecone_index=pinecone_index,
                 add_sparse_vector=True,
@@ -84,7 +92,7 @@ class BaseQuery(ABC):
             index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
             vector_retriever = VectorIndexRetriever(
                 index=index,
-                similarity_top_k=20
+                similarity_top_k=60
             )
 
             response_synthesizer = get_response_synthesizer()
@@ -177,7 +185,7 @@ class BaseQuery(ABC):
         for idx, node in enumerate(nodes, 1):
             if idx != 1:
                 node_prompt += "\n\n"
-            node_prompt += f"【Context No.{idx}】\n{node.text}"
+            node_prompt += f"【Context No.{idx}】\n[similarity: {node.score}]\n{node.text}"
 
         return node_prompt
 
