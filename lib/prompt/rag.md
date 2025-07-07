@@ -20,12 +20,12 @@ Make sure to modify all code that follows deprecated specifications.
 After modifications, ensure that all code following deprecated specifications has been replaced with code that conforms to the latest specifications.
 If multiple deprecated specifications are present within `## Input Code`, confirm that all are unified under the latest specifications.
 
-### Context
+## Context
 ```
 {context}
 ```
 
-### Input Code
+## Input Code
 ```
 {user_query}
 ```
