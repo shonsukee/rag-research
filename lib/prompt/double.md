@@ -22,7 +22,7 @@ If multiple deprecated specifications are present within `## Input Code`, confir
 
 ## Deprecated specification
 ```
-{outdated}
+{deprecated}
 ```
 
 ## Input Code
