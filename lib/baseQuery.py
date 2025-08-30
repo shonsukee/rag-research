@@ -3,7 +3,10 @@ from typing import Optional, List
 import string
 from abc import ABC
 from dotenv import load_dotenv
+from llama_index.core.postprocessor.llm_rerank import LLMRerank
+from llama_index.core.schema import NodeWithScore
 from openai import OpenAI
+from llama_index.llms.openai import OpenAI as LlamaOpenAI
 from pinecone import Pinecone
 from llama_index.core import VectorStoreIndex, get_response_synthesizer, Settings
 from llama_index.core.retrievers import VectorIndexRetriever
@@ -189,7 +192,8 @@ class BaseQuery(ABC):
 
         return node_prompt
 
-    def _fetch_pinecone_indexes(self, index_name: str, user_query: str) -> str:
+    def _fetch_pinecone_indexes(self, index_name: str, user_query: str) -> List[NodeWithScore]:
+
         """
         Pineconeインデックスからデータを取得する
 
@@ -205,7 +209,29 @@ class BaseQuery(ABC):
 
         query_engine = self._initialize_pinecone(index_name)
         response = query_engine.query(user_query)
-        return self._process_nodes(response.source_nodes)
+        return response.source_nodes
+
+    def rerank(self, nodes: List, query: str) -> List[NodeWithScore] | None:
+        """
+        TODO: _fetch_pinecone_indexesの結果を受けて実施
+        ノードを再ランク付けする
+
+        Args:
+            nodes (List): 処理対象のノードリスト
+
+        Returns:
+            str: 再ランク付けされたノードのテキスト
+        """
+        ranker = LLMRerank(
+            choice_batch_size=5, top_n=60, llm=LlamaOpenAI(model="gpt-4o")
+        )
+
+        if not nodes:
+            return None
+
+        return ranker.postprocess_nodes(
+            nodes, query_str=query
+        )
 
     def _fetch_links(self) -> str:
         """

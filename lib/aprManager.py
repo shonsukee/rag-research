@@ -44,14 +44,25 @@ class APRManager:
         results = {}
         results["user_query"] = self.read_file(file_path)
         language = file_path.split("/")[-1].split(".")[-1]
+        keys = query._fetch_vars()
 
         if query.prompt_name == "llm":
             results["link"] = query._fetch_links()
         else:
-            for key in query._fetch_vars():
+            for key in keys:
                 if key == "user_query":
                     continue
-                results[key] = query._fetch_pinecone_indexes(key, results["user_query"])
+
+                fetch_nodes = query._fetch_pinecone_indexes(key, results["user_query"])
+
+                # リランキングを実施
+                reranked_nodes = query.rerank(fetch_nodes, results["user_query"])
+                if reranked_nodes is None:
+                    logging.warning(f"No nodes found for key: {key} in {query.namespace}")
+                    return
+
+                results[key] = query._process_nodes(reranked_nodes)
+
         prompt = query._create_prompt(results)
 
         # 結果保存先ディレクトリ作成
