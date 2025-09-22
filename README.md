@@ -22,7 +22,7 @@ $ pip install -r requirements.txt
 1. Create Index押下
 2. index nameの入力
     - index nameは`latest`, `deprecated`, `latest-natural-language`, `latest-code`...にすることを推奨します
-3. text-embedding-3-smallを選択して，Dimensionを1536に設定
+3. text-embedding-3-largeを選択して，Dimensionを1536に設定
 4. その他は変えずにCreate Index
 
 > [!WARNING]
