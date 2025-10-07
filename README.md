@@ -28,6 +28,12 @@ $ pip install -r requirements.txt
 > [!WARNING]
 > ※ 無料だとIndexは5つまでしか設定できない
 
+### ビルド
+```
+// ragという名前のimageを作成
+$ docker build -t rag .
+```
+
 #### コンテキスト格納コマンド
 > [!NOTE]
 > `/dataset`にプロバイダ名と仕様URLをあらかじめ格納しておく！
@@ -41,29 +47,30 @@ $ pip install -r requirements.txt
     - URLから取得した情報をコード片と自然言語に分割する
     - その後，指定されたバージョンのDBへ格納する
 ```
-$ make store name=<project-name> version=<latest || deprecated> method=<all || separate> index-name=<index-name>
+$ docker run --rm -v $(pwd):/app rag make store name=<project-name> version=<latest || deprecated> method=<all || separate> index-name=<index-name>
 ```
 ```
 // switchbotの非推奨仕様をそのまま`deprecated`という名前のDBに格納するコマンド
-$ make store name=switchbot version=deprecated method=all index-name=deprecated
+$ docker run --rm -v $(pwd):/app rag make store name=switchbot version=deprecated method=all index-name=deprecated
 
 // switchbotの最新仕様をコードと自然言語で分割して`latest-code`, `latest-natural-language`という名前のDBに格納するコマンド
-$ make store name=switchbot version=latest method=separate index-name=latest
+$ docker run --rm -v $(pwd):/app rag make store name=switchbot version=latest method=separate index-name=latest
 
 // switchbotの最新仕様, 非推奨仕様をそのまま`context`という名前のDBに格納するコマンド
-$ make store name=switchbot version=latest method=all index-name=context
-$ make store name=switchbot version=deprecated method=all index-name=context
+$ docker run --rm -v $(pwd):/app rag make store name=switchbot version=latest method=all index-name=context
+$ docker run --rm -v $(pwd):/app rag make store name=switchbot version=deprecated method=all index-name=context
 ```
 
 ### 自動バグ修正の適用
 - プロンプトテンプレートを指定して自動バグ修正を実施
 - 詳細は`/prompt`のテンプレート集を確認
+
 ```
-$ make apr name=<project-name> types=<commits || issues || pull-requests> out=<output-directory> prompt-name=<prompt-template-file-name>
+$ docker run --rm -v $(pwd):/app rag make apr name=<project-name> types=<commits || issues || pull-requests> out=<output-directory> prompt-name=<prompt-template-file-name>
 ```
 ```
-$ make apr name=switchbot types=commits out=./results prompt-name=llm
+$ docker run --rm -v $(pwd):/app rag make apr name=switchbot types=commits out=./results prompt-name=llm
 
 // switchbotのPRデータセットをtriple_latestというプロンプトに適用して`results`というディレクトリに出力
-$ make apr name=switchbot types=pull-requests out=./results prompt-name=triple_latest
+$ docker run --rm -v $(pwd):/app rag make apr name=switchbot types=pull-requests out=./results prompt-name=triple_latest
 ```
