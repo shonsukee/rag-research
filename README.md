@@ -12,8 +12,8 @@ REST API誤用を対象としたRAGの自動修正ツールです．
 ```
 $ git clone https://github.com/shonsukee/rag-research.git
 
+// (非推奨)venvでやる場合
 $ python3 -m venv myenv
-
 $ pip install -r requirements.txt
 ```
 
